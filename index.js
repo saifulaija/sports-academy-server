@@ -33,6 +33,15 @@ async function run() {
     const usersCollection = client.db('sportsDb').collection('users')
 
 
+    // Users related api
+
+    // get all users 
+
+    app.get('/users', async(req, res)=>{
+      const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
 //     save user email and role in db
 
 app.put('/users/:email', async(req, res)=>{
