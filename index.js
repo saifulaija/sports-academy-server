@@ -127,6 +127,15 @@ async function run() {
       res.send(result)
     })
 
+    // get all class by email
+
+    app.get('/classes/:email', async(req, res)=>{
+      const email = req.params.email
+      const query = {'instructor.email': email}
+      const result = await classesCollection.find(query).toArray()
+      res.send(result)
+    })
+
 
     // update for approve
 
@@ -156,8 +165,49 @@ async function run() {
       res.send(result);
     })
 
-    // get status
 
+    // sent feedback
+
+    
+    app.put("/feedback/:email", async (req, res) => {
+      const id = req.params.id
+      const user = req.body;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    // class by id
+
+    app.get('/feedback/:id', async(req, res)=>{
+      const id= req.params.id 
+      const query = {_id: new ObjectId(id)}
+      const result = await classesCollection.findOne(query)
+      res.send(result)
+    })
+
+
+    // for feedback update 
+
+    app.put("/updated/:id", async (req, res) => {
+      const id = req.params.id;
+      const user = req.body;
+      const query = { _id: new ObjectId(id)};
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await classesCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+
+    // get status
+ 
     
     app.get('/status/:id', async(req, res)=>{
       const id = req.params.id
