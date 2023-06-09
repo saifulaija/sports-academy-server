@@ -31,6 +31,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
 
     const usersCollection = client.db("sportsDb").collection("users");
+    const classesCollection = client.db("sportsDb").collection("classes");
 
     // Users related api
 
@@ -94,6 +95,22 @@ async function run() {
       console.log(result)
       res.send(result)
     })
+
+
+    // all api for classes
+
+    // save a class
+
+    app.post('/classes', async(req, res)=>{
+      const classes = req.body
+      console.log(classes);
+      const result = await classesCollection.insertOne(classes) 
+      res.send(result)
+
+    })
+    
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
