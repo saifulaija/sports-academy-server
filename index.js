@@ -128,6 +128,48 @@ async function run() {
     })
 
 
+    // update for approve
+
+    app.patch('/approved/:id', async(req, res)=>{
+      const id = req.params.id 
+      const filter = {_id: new ObjectId(id)}
+      const updateDoc={
+        $set:{
+          status:'approved',
+        }
+      }
+      const result = await classesCollection.updateOne(filter, updateDoc)
+      res.send(result);
+    })
+
+    // update for deny
+
+    app.patch('/deny/:id', async(req, res)=>{
+      const id = req.params.id 
+      const filter = {_id: new ObjectId(id)}
+      const updateDoc={
+        $set:{
+          status:'deny',
+        }
+      }
+      const result = await classesCollection.updateOne(filter, updateDoc)
+      res.send(result);
+    })
+
+    // get status
+
+    
+    app.get('/status/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await classesCollection.findOne(query)
+      console.log(result)
+      res.send(result)
+    })
+
+
+
+
 
 
     // Send a ping to confirm a successful connection
