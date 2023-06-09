@@ -87,6 +87,15 @@ async function run() {
     });
 
 
+    // get all instructor
+
+    app.get('/instructors', async(req, res)=>{
+     
+      const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
+
     // get role
 
     app.get('/role/:email', async(req, res)=>{
@@ -117,7 +126,7 @@ async function run() {
       console.log(result);
       res.send(result)
     })
-    
+
 
 
 
