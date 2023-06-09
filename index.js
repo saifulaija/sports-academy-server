@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const { param } = require("express/lib/request");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -107,6 +108,14 @@ async function run() {
       const result = await classesCollection.insertOne(classes) 
       res.send(result)
 
+    })
+
+    // get all classes
+
+    app.get('/classes', async(req, res)=>{
+      const result = await classesCollection.find().toArray()
+      console.log(result);
+      res.send(result)
     })
     
 
