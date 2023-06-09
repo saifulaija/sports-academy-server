@@ -2,16 +2,19 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000
 
 
 // middleware
-
-app.use(cors())
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
 app.use(express.json())
-
 
 
 
@@ -29,7 +32,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+   
     const usersCollection = client.db('sportsDb').collection('users')
 
 
@@ -41,6 +44,8 @@ async function run() {
       const result = await usersCollection.find().toArray()
       res.send(result)
     })
+
+
 
 //     save user email and role in db
 
@@ -54,6 +59,20 @@ app.put('/users/:email', async(req, res)=>{
       }
       const result = await usersCollection.updateOne(query, updateDoc, options)
       res.send(result)
+})
+
+//
+
+app.patch('/admin/:id', async(req, res)=>{
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id)}
+  const updateDoc={
+    $set: {
+      role: 'admin'
+    },
+  };
+  const result = await usersCollection.updateOne(filter, updateDoc)
+  res.send(result)
 })
 
 
