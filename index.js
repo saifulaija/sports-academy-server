@@ -34,6 +34,7 @@ async function run() {
 
     const usersCollection = client.db("sportsDb").collection("users");
     const classesCollection = client.db("sportsDb").collection("classes");
+    const bookingCollection = client.db("sportsDb").collection("bookings");
 
     // Users related api
 
@@ -254,7 +255,21 @@ async function run() {
       const result= await classesCollection.find().toArray()
       res.send(result)
     })
+
+
+    // Bookings Related API------------
+
+
+    // insert a booking to db
+
     
+    app.post('/bookings', async(req, res)=>{
+      const booking = req.body
+      console.log(booking)
+      const result = await bookingCollection.insertOne(booking)
+      res.send(result)
+    })
+
 
 
 
