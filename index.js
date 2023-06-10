@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const { param } = require("express/lib/request");
+const req = require("express/lib/request");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -218,7 +219,7 @@ async function run() {
       const result = await classesCollection.updateOne(filter, updatedClass, options)
       res.send(result)
     })
-    
+
 
 
     // for feedback update 
@@ -246,6 +247,14 @@ async function run() {
       console.log(result)
       res.send(result)
     })
+
+    // get all classes
+
+    app.get('/all-classes', async(req, res)=>{
+      const result= await classesCollection.find().toArray()
+      res.send(result)
+    })
+    
 
 
 
