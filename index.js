@@ -271,6 +271,16 @@ async function run() {
     })
 
 
+    // get booking classes by user email
+
+    app.get('/bookings/:email', async(req, res)=>{
+      const email = req.params.email 
+      const query = {email: email}
+      const result = await bookingCollection.find(query).toArray()
+      res.send(result)
+    })
+
+
 
 
 
