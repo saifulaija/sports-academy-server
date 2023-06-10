@@ -256,6 +256,13 @@ async function run() {
       res.send(result)
     })
 
+    // get 6 classes by using price
+
+    app.get('/six-classes', async(req, res)=>{
+     const result = await classesCollection.find().sort({students: -1}).limit(6).toArray()
+      res.send(result)
+    })
+
 
     // Bookings Related API------------
 
@@ -277,6 +284,24 @@ async function run() {
       const email = req.params.email 
       const query = {email: email}
       const result = await bookingCollection.find(query).toArray()
+      res.send(result)
+    })
+
+    // Booking delete by id 
+    app.delete('/bookings/:id', async(req, res)=>{
+      const id = req.params.id 
+      const query = {_id: new ObjectId(id)}
+      const result = await bookingCollection.deleteOne(query)
+      res.send(result)
+
+    })
+
+    // booking get by id
+    
+    app.get('/payment/:id', async(req, res)=>{
+      const id = req.params.id 
+      const query = {_id: new ObjectId(id)}
+      const result = await bookingCollection.findOne(query)
       res.send(result)
     })
 
