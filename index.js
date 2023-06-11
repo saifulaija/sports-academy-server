@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const  morgan = require('morgan')
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const { param } = require("express/lib/request");
 const req = require("express/lib/request");
 const app = express();
 const port = process.env.PORT || 5000;
+const stripe =require('stripe')(process.env.PAYMENT_SECRET_KEY)
 
 // middleware
 const corsOptions = {
@@ -35,6 +37,25 @@ async function run() {
     const usersCollection = client.db("sportsDb").collection("users");
     const classesCollection = client.db("sportsDb").collection("classes");
     const bookingCollection = client.db("sportsDb").collection("bookings");
+
+
+    // Generate Client secret for stripe
+
+    app.post('/create-payment-intent', async(req, res)=>{
+      const {price} = req.body;
+      const amount =parseInt( price * 100);
+      console.log(price, amount);
+      const paymentIntent = await stripe.paymentIntents.create({
+            amount:amount,
+            currency: 'usd',
+            payment_method_types: ['card']
+
+
+      })
+      res.send({
+            clientSecret: paymentIntent.client_secret
+      })
+})
 
     // Users related api
 
@@ -104,7 +125,7 @@ async function run() {
       const email = req.params.email 
       const query = {email: email}
       const result = await usersCollection.findOne(query)
-      console.log(result)
+     
       res.send(result)
     })
 
@@ -115,7 +136,7 @@ async function run() {
 
     app.post('/classes', async(req, res)=>{
       const classes = req.body
-      console.log(classes);
+     
       const result = await classesCollection.insertOne(classes) 
       res.send(result)
 
@@ -125,7 +146,7 @@ async function run() {
 
     app.get('/classes', async(req, res)=>{
       const result = await classesCollection.find().toArray()
-      console.log(result);
+      
       res.send(result)
     })
 
@@ -272,7 +293,7 @@ async function run() {
     
     app.post('/bookings', async(req, res)=>{
       const booking = req.body
-      console.log(booking)
+      
       const result = await bookingCollection.insertOne(booking)
       res.send(result)
     })
