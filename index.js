@@ -37,6 +37,7 @@ async function run() {
     const usersCollection = client.db("sportsDb").collection("users");
     const classesCollection = client.db("sportsDb").collection("classes");
     const bookingCollection = client.db("sportsDb").collection("bookings");
+    const paymentCollection = client.db("sportsDb").collection("payments");
 
 
     // Generate Client secret for stripe
@@ -189,6 +190,7 @@ async function run() {
     })
 
 
+
     // sent feedback
 
     
@@ -317,6 +319,8 @@ async function run() {
 
     })
 
+    
+
     // booking get by id
     
     app.get('/payment/:id', async(req, res)=>{
@@ -324,6 +328,39 @@ async function run() {
       const query = {_id: new ObjectId(id)}
       const result = await bookingCollection.findOne(query)
       res.send(result)
+    })
+
+
+    // Payment Related Api
+
+    app.post('/payment', async(req, res)=>{
+      const payment = req.body 
+      const result = await paymentCollection.insertOne(payment)
+      res.send(result)
+    })
+
+    // all payment by email
+app.get('/payment-all/:email', async(req, res)=>{
+  const email = req.params.email
+  const query = {email: email}
+  const result = await paymentCollection.find(query).toArray()
+  res.send(result)
+})
+
+
+    // uddate payment status by id
+
+    
+    app.patch('/payment/:id', async(req, res)=>{
+      const id = req.params.id 
+      const filter = {_id: new ObjectId(id)}
+      const updateDoc={
+        $set:{
+          payment:'success',
+        }
+      }
+      const result = await bookingCollection.updateOne(filter, updateDoc)
+      res.send(result);
     })
 
 
