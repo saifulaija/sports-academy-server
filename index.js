@@ -1,14 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const  morgan = require('morgan')
+const morgan = require("morgan");
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const { param } = require("express/lib/request");
 const req = require("express/lib/request");
 const app = express();
 const port = process.env.PORT || 5000;
-const stripe =require('stripe')(process.env.PAYMENT_SECRET_KEY)
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 
 // middleware
 const corsOptions = {
@@ -39,24 +39,21 @@ async function run() {
     const bookingCollection = client.db("sportsDb").collection("bookings");
     const paymentCollection = client.db("sportsDb").collection("payments");
 
-
     // Generate Client secret for stripe
 
-    app.post('/create-payment-intent', async(req, res)=>{
-      const {price} = req.body;
-      const amount =parseInt( price * 100);
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
       console.log(price, amount);
       const paymentIntent = await stripe.paymentIntents.create({
-            amount:amount,
-            currency: 'usd',
-            payment_method_types: ['card']
-
-
-      })
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
       res.send({
-            clientSecret: paymentIntent.client_secret
-      })
-})
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
 
     // Users related api
 
@@ -110,92 +107,83 @@ async function run() {
       res.send(result);
     });
 
-
     // get all instructor
 
-    app.get('/instructors', async(req, res)=>{
-     
-      const result = await usersCollection.find().toArray()
-      res.send(result)
-    })
-
+    app.get("/instructors", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
 
     // get role
 
-    app.get('/role/:email', async(req, res)=>{
-      const email = req.params.email 
-      const query = {email: email}
-      const result = await usersCollection.findOne(query)
-     
-      res.send(result)
-    })
+    app.get("/role/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
 
+      res.send(result);
+    });
 
     // all api for classes
 
     // save a class
 
-    app.post('/classes', async(req, res)=>{
-      const classes = req.body
-     
-      const result = await classesCollection.insertOne(classes) 
-      res.send(result)
+    app.post("/classes", async (req, res) => {
+      const classes = req.body;
 
-    })
+      const result = await classesCollection.insertOne(classes);
+      res.send(result);
+    });
 
     // get all classes
 
-    app.get('/classes', async(req, res)=>{
-      const result = await classesCollection.find().toArray()
-      
-      res.send(result)
-    })
+    app.get("/classes", async (req, res) => {
+      const result = await classesCollection.find().toArray();
+
+      res.send(result);
+    });
 
     // get all class by email TODO
 
-    app.get('/classes/:email', async(req, res)=>{
-      const email = req.params.email
-      const query = {'instructor.email': email}
-      const result = await classesCollection.find(query).toArray()
-      res.send(result)
-    })
-
+    app.get("/classes/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { "instructor.email": email };
+      const result = await classesCollection.find(query).toArray();
+      res.send(result);
+    });
 
     // update for approve
 
-    app.patch('/approved/:id', async(req, res)=>{
-      const id = req.params.id 
-      const filter = {_id: new ObjectId(id)}
-      const updateDoc={
-        $set:{
-          status:'approved',
-        }
-      }
-      const result = await classesCollection.updateOne(filter, updateDoc)
+    app.patch("/approved/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: "approved",
+        },
+      };
+      const result = await classesCollection.updateOne(filter, updateDoc);
       res.send(result);
-    })
+    });
 
     // update for deny
 
-    app.patch('/deny/:id', async(req, res)=>{
-      const id = req.params.id 
-      const filter = {_id: new ObjectId(id)}
-      const updateDoc={
-        $set:{
-          status:'deny',
-        }
-      }
-      const result = await classesCollection.updateOne(filter, updateDoc)
+    app.patch("/deny/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: "deny",
+        },
+      };
+      const result = await classesCollection.updateOne(filter, updateDoc);
       res.send(result);
-    })
-
-
+    });
 
     // sent feedback
 
-    
     app.put("/feedback/:email", async (req, res) => {
-      const id = req.params.id
+      const id = req.params.id;
       const user = req.body;
       const query = { _id: new ObjectId(id) };
       const options = { upsert: true };
@@ -208,166 +196,177 @@ async function run() {
 
     // class by id
 
-    app.get('/feedback/:id', async(req, res)=>{
-      const id= req.params.id 
-      const query = {_id: new ObjectId(id)}
-      const result = await classesCollection.findOne(query)
-      res.send(result)
-    })
+    app.get("/feedback/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classesCollection.findOne(query);
+      res.send(result);
+    });
     // class by id
 
-    app.get('/update/:id', async(req, res)=>{
-      const id= req.params.id 
-      const query = {_id: new ObjectId(id)}
-      const result = await classesCollection.findOne(query)
-      res.send(result)
-    })
+    app.get("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classesCollection.findOne(query);
+      res.send(result);
+    });
 
     // class update by id
 
-    app.put('/classes/:id', async(req, res)=>{
-      const id = req.params.id 
-      const classes = req.body
-      
-      const filter = {_id: new ObjectId(id)}
-      const options = {upsert: true}
-      const updatedClass={
-        $set:{
+    app.put("/classes/:id", async (req, res) => {
+      const id = req.params.id;
+      const classes = req.body;
+
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedClass = {
+        $set: {
           name: classes.name,
           photo: classes.photo,
           price: classes.price,
-          seats: classes.seats
-        }
-      }
-      
-      const result = await classesCollection.updateOne(filter, updatedClass, options)
-      res.send(result)
-    })
+          seats: classes.seats,
+        },
+      };
 
+      const result = await classesCollection.updateOne(
+        filter,
+        updatedClass,
+        options
+      );
+      res.send(result);
+    });
 
-
-    // for feedback update 
+    // for feedback update
 
     app.put("/updated/:id", async (req, res) => {
       const id = req.params.id;
       const user = req.body;
-      const query = { _id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = {
         $set: user,
       };
-      const result = await classesCollection.updateOne(query, updateDoc, options);
+      const result = await classesCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
 
-
     // get status
- 
-    
-    app.get('/status/:id', async(req, res)=>{
-      const id = req.params.id
-      const query = {_id: new ObjectId(id)}
-      const result = await classesCollection.findOne(query)
-      console.log(result)
-      res.send(result)
-    })
+
+    app.get("/status/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classesCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
 
     // get all classes
 
-    app.get('/all-classes', async(req, res)=>{
-      const result= await classesCollection.find().toArray()
-      res.send(result)
-    })
+    app.get("/all-classes", async (req, res) => {
+      const result = await classesCollection.find().toArray();
+      res.send(result);
+    });
 
     // get 6 classes by using price
 
-    app.get('/six-classes', async(req, res)=>{
-     const result = await classesCollection.find().sort({students: -1}).limit(6).toArray()
-      res.send(result)
-    })
-
+    app.get("/six-classes", async (req, res) => {
+      const result = await classesCollection
+        .find()
+        .sort({ students: -1 })
+        .limit(6)
+        .toArray();
+      res.send(result);
+    });
 
     // Bookings Related API------------
 
-
     // insert a booking to db
 
-    
-    app.post('/bookings', async(req, res)=>{
-      const booking = req.body
-      
-      const result = await bookingCollection.insertOne(booking)
-      res.send(result)
-    })
+    app.post("/bookings", async (req, res) => {
+      const booking = req.body;
 
+      const result = await bookingCollection.insertOne(booking);
+      res.send(result);
+    });
 
     // get booking classes by user email
 
-    app.get('/bookings/:email', async(req, res)=>{
-      const email = req.params.email 
-      const query = {email: email}
-      const result = await bookingCollection.find(query).toArray()
-      res.send(result)
-    })
+    app.get("/bookings/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
 
-    // Booking delete by id 
-    app.delete('/bookings/:id', async(req, res)=>{
-      const id = req.params.id 
-      const query = {_id: new ObjectId(id)}
-      const result = await bookingCollection.deleteOne(query)
-      res.send(result)
-
-    })
-
-    
+    // Booking delete by id
+    app.delete("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // booking get by id
-    
-    app.get('/payment/:id', async(req, res)=>{
-      const id = req.params.id 
-      const query = {_id: new ObjectId(id)}
-      const result = await bookingCollection.findOne(query)
-      res.send(result)
-    })
 
+    app.get("/payment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.findOne(query);
+      res.send(result);
+    });
 
     // Payment Related Api
 
-    app.post('/payment', async(req, res)=>{
-      const payment = req.body 
-      const result = await paymentCollection.insertOne(payment)
-      res.send(result)
-    })
+    app.post("/payment", async (req, res) => {
+      const payment = req.body;
+      payment.createdAt = new Date();
+      const result = await paymentCollection.insertOne(payment);
+      res.send(result);
+    });
 
     // all payment by email
-app.get('/payment-all/:email', async(req, res)=>{
-  const email = req.params.email
-  const query = {email: email}
-  const result = await paymentCollection.find(query).toArray()
-  res.send(result)
-})
-
-
-    // uddate payment status by id
-
-    
-    app.patch('/payment/:id', async(req, res)=>{
-      const id = req.params.id 
-      const filter = {_id: new ObjectId(id)}
-      const updateDoc={
-        $set:{
-          payment:'success',
-        }
-      }
-      const result = await bookingCollection.updateOne(filter, updateDoc)
+    app.get("/payment-all/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await paymentCollection
+        .find(query)
+        .sort({ createdAt: -1 })
+        .toArray();
       res.send(result);
-    })
+    });
 
+    // update payment status by id seats decrease and students increase
 
+    app.patch("/updated/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $inc: {
+          students: 1,
+          seats: -1,
+        },
+      };
+      const result = await classesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
 
+    // seats and students quantity updated
 
-
-
+    app.patch("/payment/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          payment: "success",
+        },
+      };
+      const result = await bookingCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
