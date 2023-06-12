@@ -341,7 +341,7 @@ async function run() {
 
     // update payment status by id seats decrease and students increase
 
-    app.patch("/updated/:id", async (req, res) => {
+    app.patch("/updated-two/:id", async(req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
