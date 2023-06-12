@@ -293,12 +293,12 @@ async function run() {
       res.send(result);
     });
 
-    // get booking classes by user email
+    // get booking classes by user email email and filter
 
     app.get("/bookings/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
-      const result = await bookingCollection.find(query).toArray();
+      const result = await bookingCollection.find(query).filter({'payment': 'pending'}).toArray();
       res.send(result);
     });
 
