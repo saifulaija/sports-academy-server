@@ -267,7 +267,7 @@ async function run() {
     // get all classes
 
     app.get("/all-classes", async (req, res) => {
-      const result = await classesCollection.find().toArray();
+      const result = await classesCollection.find({status:'approved'}).toArray();
       res.send(result);
     });
 
@@ -275,7 +275,7 @@ async function run() {
 
     app.get("/six-classes", async (req, res) => {
       const result = await classesCollection
-        .find()
+        .find({status:'approved'})
         .sort({ students: -1 })
         .limit(6)
         .toArray();
