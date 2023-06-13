@@ -107,9 +107,15 @@ async function run() {
       res.send(result);
     });
 
-    // get all instructor
+    // get 6 instructor
 
     app.get("/instructors", async (req, res) => {
+      const result = await usersCollection.find().limit(6).toArray();
+      res.send(result);
+    });
+    // get all
+
+    app.get("/instructors-all", async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
