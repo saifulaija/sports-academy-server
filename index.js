@@ -110,7 +110,7 @@ async function run() {
     // get 6 instructor
 
     app.get("/instructors", async (req, res) => {
-      const result = await usersCollection.find().limit(6).toArray();
+      const result = await usersCollection.find(role==='instructor').limit(6).toArray();
       res.send(result);
     });
     // get all
