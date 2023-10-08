@@ -109,8 +109,8 @@ async function run() {
 
     // get 6 instructor
 
-    app.get("/instructors", async (req, res) => {
-      const result = await usersCollection.find(role==='instructor').limit(6).toArray();
+    app.get("/instructors", async(req, res) => {
+      const result = await usersCollection.find({role:'instructor'}).limit(6).toArray();
       res.send(result);
     });
     // get all
@@ -304,7 +304,7 @@ async function run() {
     app.get("/bookings/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
-      const result = await bookingCollection.find(query).filter({'payment': 'pending'}).toArray();
+      const result = await bookingCollection.find(query).toArray();
       res.send(result);
     });
 
